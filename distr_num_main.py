@@ -9,11 +9,14 @@
 """
 import json
 from create_num_table import create_num_lst
+from console_out import console_out as output
+
 
 try:
     with open("cards_numbers.json", "r") as read_file:
         card_num_list = json.load(read_file)
 except FileNotFoundError:
+
     print("Похоже, что файла с номерами не существует. Для продолжения работы нужно будет создать такой файл.")
     start = int(input("Введите начальное значение диапазона номеров: "))
     end = int(input("Введите конечное значение диапазона номеров: "))
@@ -23,18 +26,12 @@ except FileNotFoundError:
         free_args = free_args.split()
     else:
         free_args = []
+
     card_num_list = create_num_lst(start, end, free_args, immut=immut)
+    # TODO: Нижележащий модуль не нужен, так как запись будем производить из списка в конце работы программы
+    with open("cards_numbers.json", "w") as write_file:
+        json.dump(card_num_list, write_file)
 
-# TODO: Блок отладочного кода, удалить при релизе
-
-count = 7
-
-for num in card_num_list:
-    if count:
-        print(num, end=' ')
-        count -= 1
-    else:
-        count = 7
-        print(num)
-
+# TODO: сделать обработчик аргументов командной строки
+output(card_num_list, 10)
 
