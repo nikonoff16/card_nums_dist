@@ -1,2 +1,5 @@
 #Игнорим все json-файлы
 *.json
+__pycache__
+.vscode
+.idea
