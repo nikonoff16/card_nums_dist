@@ -1,5 +1,6 @@
 #Игнорим все json-файлы
 *.json
+*.txt
 __pycache__
 .vscode
 .idea
