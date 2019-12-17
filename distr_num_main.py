@@ -82,6 +82,8 @@ def main():
         else:
             raise Exception ("Системный файл недоступен или поврежден, повторите запрос позже")
 
+    # Обрабатываем аргументы командной строки
+    args = transit_args()
 
     with open("cards_numbers.json", "r") as change_file:
         try:
