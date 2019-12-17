@@ -17,6 +17,13 @@ from console_out import console_out as output
 from give_num import give_num
 
 def create_new_json():
+    """
+    Функция создает новый файл с нужными параметрами. Странная система префиксов и дополнительных чисел
+    исходит из местечковой специфики бумажных списков, используемых в больнице, где работал создатель
+    скрипта. Часто приходилось довольствоваться маленьким куском от большого списка, который жил именно по
+    своим правилам: имел только числа, оканчивающиеся на 1, 2, 3, а начинающийся с условного 456. Найдя такие 
+    закономерности, можно перенести любое бумажное безобразие в красивые электронные списки. 
+    """
     start = int(input("\nВведите начальное значение диапазона номеров: "))
     end = int(input("\nВведите конечное значение диапазона номеров: "))
     immut = input("\nДополнительно: введите неизменяемый прекфикс числа, если он пристутствует (в случае отсутствия - нажмите ввод): ")
@@ -42,7 +49,9 @@ def test_card_num(card_list):
         return 2
 
 def transit_args():
-    # Обрабатываем аргументы командной строки
+    """
+    Обрабатываем аргументы командной строки отдельной функцией
+    """
     parser = argparse.ArgumentParser(description="Numbers of card numbers and some other data.")
     parser.add_argument("--n", type=int, default=1, help="Необязательный аргумент - количество номеров.")
     parser.add_argument("--rnd", type=int, default=1, help="Необязательный аргумент - количество номеров.")
@@ -56,17 +65,29 @@ def transit_args():
     return {"n": args.n, "rnd": rnd}
 
 def main():
+    """ 
+    Тело главной функции. Аргументов не принимает. 
+    При множественных вызовах этой функции уникальность раздаваемых номеров гарантируется блокировой файла 
+    с номерами. Блокировка заключается в том, что файл становится пустым, и при любом обращении к нему из 
+    другой программы обработчик json-файлов получает ValueError. Эта ошибка ловится и программа повторяет 
+    обращение к файлу через некоторое время. 
+    TODO: Если количество_пользователей > 20: 
+               блокировка_с_задержкой = использование_БД  # или иной масштабируемый способ
+    """
+
+    # блок проверки наличия, доступности и восстановления файла
+    # TODO: прикрутить восстановление, если файл пуст. 
     timer = 5
     while True:
         main_status = test_card_num("cards_numbers.json")
         reserve_status = test_card_num("reserve_copy.json")
-        if main_status == 1 and reserve_status == 0:
+        if main_status == 1 and reserve_status == 0:    # Если нет файла с номерами, но есть его копия
             with open("reserve_copy.json", "r") as read_file:
                 card_num_list = json.load(read_file)
             with open("cards_numbers.json", "w") as change_file:
                 json.dump(card_num_list, change_file)
             break
-        elif main_status == 1:   
+        elif main_status == 1:                          # Если файла с номерами нет ни в каком виде
             card_num_list = create_new_json()
             with open("cards_numbers.json", "w") as change_file:
                 json.dump(card_num_list, change_file)
@@ -74,7 +95,7 @@ def main():
         
         if main_status == 0:
             break
-        elif main_status == 2 and timer > 0:
+        elif main_status == 2 and timer > 0:            # То есть если ValueError
             print("Файл не доступен, ожидаем ответа")
             time.sleep(2)
             timer -= 1
@@ -85,6 +106,9 @@ def main():
     # Обрабатываем аргументы командной строки
     args = transit_args()
 
+    # Считываем данные из файла с номерами. 
+    # TODO: Срочно поменять эту систему. Файл может стать заблокированным в момент между 
+    # проверкой и записью, и тогда уникальность номеров может быть скомпроментирована. 
     with open("cards_numbers.json", "r") as change_file:
         try:
             card_num_list = json.load(change_file)
@@ -92,6 +116,7 @@ def main():
             with open("reserve_copy.json", "r") as read_file:
                 card_num_list = json.load(read_file)
     
+    # Блокируем файл, выдаем пользователю номера, производим запись в основной и резервный файлы. 
     with open("cards_numbers.json", "w") as change_file:
         # Обрабатываем аргументы командной строки
         args = transit_args()
