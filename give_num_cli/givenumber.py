@@ -1,12 +1,3 @@
-"""
-Скрипт проверяет налчие файла с номерами.
-Если нет - создает новый, вызывая модуль create_num_table.py,
-запрашивая у пользователя параметры создания номеров карт.
-Если да - подключает найденный json-файл, извлекает из него информацию, 
-выдает очередной номер (случайным образом полученный из множества оставшихся номеров),
-удаляет его из списка и помещает в список использованных номеров. 
-После выполнения этой работы производится запись в json-файл с номерами. 
-"""
 import json
 import sys
 import argparse
@@ -52,17 +43,20 @@ def transit_args():
     """
     Обрабатываем аргументы командной строки отдельной функцией
     """
-    parser = argparse.ArgumentParser(description="Numbers of card numbers and some other data.")
-    parser.add_argument("--n", type=int, default=1, help="Необязательный аргумент - количество номеров.")
-    parser.add_argument("--rnd", type=int, default=1, help="Необязательный аргумент - количество номеров.")
+    parser = argparse.ArgumentParser(description="Утилита для получения номера медицинской карты. ")
+    parser.add_argument("-n", "--nums", type=int, default=1, help="Указывает количество нужных номеров карт")
+    parser.add_argument("-r", "--random", action="store_true", help="Программа выбирает номера в случайном порядке")
+    parser.add_argument("-a", "--append", action="store_true", help="Открывает диалог дополнения списка")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Вывод на экран всего оставшегося списка номеров")
     args = parser.parse_args()
 
-    # Костыль, обрабатываю один из необязательных аргументов
-    if args.rnd != 0:
-        rnd = True
-    else:
-        rnd = False
-    return {"n": args.n, "rnd": rnd}
+    # # Костыль, обрабатываю один из необязательных аргументов
+    # if args.rnd != 0:
+    #     rnd = True
+    # else:
+    #     rnd = False
+    # return {"n": args.n, "rnd": rnd, "v": args.v}
+    return args
 
 def main():
     """ 
@@ -91,6 +85,8 @@ def main():
             card_num_list = create_new_json()
             with open("cards_numbers.json", "w") as change_file:
                 json.dump(card_num_list, change_file)
+                print("\nПолный список созданных номеров для карт:\n")
+                output(card_num_list, 10)
             break
         
         if main_status == 0:
@@ -101,7 +97,8 @@ def main():
             timer -= 1
             continue
         else:
-            raise Exception ("Системный файл недоступен или поврежден, повторите запрос позже")
+            print("Системный файл недоступен или поврежден, повторите запрос позже")
+            exit()
 
     # Обрабатываем аргументы командной строки
     args = transit_args()
@@ -110,39 +107,47 @@ def main():
     # TODO: Срочно поменять эту систему. Файл может стать заблокированным в момент между 
     # проверкой и записью, и тогда уникальность номеров может быть скомпроментирована. 
     with open("cards_numbers.json", "r") as change_file:
-        try:
-            card_num_list = json.load(change_file)
-        except ValueError:
-            with open("reserve_copy.json", "r") as read_file:
-                card_num_list = json.load(read_file)
+        card_num_list = json.load(change_file)
+        if args.append:
+            print("Добавляем новые номера в конец старого списка. Следуйте инструкциям в терминале:")
+            new_nums = create_new_json()
+            card_num_list += new_nums
     
-    # Блокируем файл, выдаем пользователю номера, производим запись в основной и резервный файлы. 
-    with open("cards_numbers.json", "w") as change_file:
-        # Обрабатываем аргументы командной строки
-        args = transit_args()
+    if card_num_list:  # Недопускаем работы с пустым списком. 
+        # Блокируем файл, выдаем пользователю номера, производим запись в основной и резервный файлы. 
+        with open("cards_numbers.json", "w") as change_file:
 
-        # Передаю аргументы в функцию для выбора индексов
-        numbers = give_num(len(card_num_list), quant=args["n"], rand=args["rnd"])  
+            # Передаю аргументы в функцию для выбора индексов
+            numbers = give_num(len(card_num_list), quant=args.nums, rand=args.random)  
 
-        # Находим нужные числа по индексам в списке номеров
-        for num in numbers:
-            real_num = card_num_list[num]
-            print("Номер для карты -", real_num)
+            # Находим нужные числа по индексам в списке номеров
+            print("\n" + "*" * (18 + len(card_num_list[0])))
+            for num in numbers:
+                real_num = card_num_list[num]
+                print("Номер для карты -", real_num)
+            print("*" * (18 + len(card_num_list[0])))
 
-        # Удаляем их из исходного списка
-        numbers = sorted(numbers, reverse=True)  # Таким образом ошибки обращения по индексу избегаем. 
-        for num in numbers:
-            card_num_list.pop(num)
+            # Удаляем их из исходного списка
+            numbers = sorted(numbers, reverse=True)  # Таким образом ошибки обращения по индексу избегаем. 
+            for num in numbers:
+                card_num_list.pop(num)
 
-        print("\nДлина обработанного списка - ", len(card_num_list))
+            print("\nДлина обработанного списка - ", len(card_num_list))
 
-        # Сохраняем список неиспользованных номеров
-        json.dump(card_num_list, change_file)
+            # Выводим все номера на экран, если аргумент --v отличается от 0
+            # Аргумент --v определяет количество столбцов, в которое будет показан список
+            if args.verbose:
+                print("\nПолный список оставшихся номеров для карт:\n")
+                output(card_num_list, 10)
 
-        # Создаем резервную копию данных
-        with open("reserve_copy.json", "w") as write_file:
-            json.dump(card_num_list, write_file)
-        
+            # Сохраняем список неиспользованных номеров
+            json.dump(card_num_list, change_file)
+
+            # Создаем резервную копию данных
+            with open("reserve_copy.json", "w") as write_file:
+                json.dump(card_num_list, write_file)
+    else:
+        print("Список свободных номеров пуст. запустите утилиту с аргументом -a (--append) для пополнения списка номеров.")   
 
 
 if __name__ == '__main__':  
