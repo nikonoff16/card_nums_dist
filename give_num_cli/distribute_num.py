@@ -1,6 +1,6 @@
 from random import randint
 
-def give_num(lst_len, quant=1, rand=False):
+def distribute_num(lst_len, quant=1, rand=False):
     chosen_nums = []
     # Этот код ограничивает количество запрошенных чисел, если оно превосходит количество чисел в списке
     if quant > lst_len:

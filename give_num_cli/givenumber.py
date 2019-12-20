@@ -125,7 +125,7 @@ def main():
             for num in numbers:
                 real_num = card_num_list[num]
                 # здесь записываем выданные номера в виде строки. 
-                with open("given_nums.txt", "a") as old_nums:
+                with open("archive_nums.txt", "a") as old_nums:
                     old_nums.write(real_num + " ")
                 print("Номер для карты -", real_num)
             print("*" * (18 + len(card_num_list[0])))
