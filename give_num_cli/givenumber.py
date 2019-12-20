@@ -5,7 +5,7 @@ import time
 
 from create_num_table import create_num_lst
 from console_out import console_out as output
-from give_num import give_num
+from distribute_num import distribute_num
 
 def create_new_json():
     """
@@ -118,7 +118,7 @@ def main():
         with open("cards_numbers.json", "w") as change_file:
 
             # Передаю аргументы в функцию для выбора индексов
-            numbers = give_num(len(card_num_list), quant=args.nums, rand=args.random)  
+            numbers = distribute_num(len(card_num_list), quant=args.nums, rand=args.random)  
 
             # Находим нужные числа по индексам в списке номеров
             print("\n" + "*" * (18 + len(card_num_list[0])))
