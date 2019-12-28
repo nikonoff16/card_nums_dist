@@ -1,6 +1,6 @@
 #! python3
 # -*- coding: utf-8 -*-
-__version__ = "1.6.2"
+__version__ = "1.6.3"
 
 MODULES_TO_IMPORT = ["https://github.com/egigoka/telegrame",
                      "https://github.com/egigoka/commands"]
@@ -43,7 +43,7 @@ for module_url in MODULES_TO_IMPORT:
             else:
                 raise NotImplementedError("OS " + sys.platform + " is not supported")
         # end getting git
-        comms = f"python3 -m pip install git+{MODULES_TO_IMPORT}"
+        comms = f"python3 -m pip install git+{module_url}"
         os.system(comms)
         try:
             exec(f"import {module}")
