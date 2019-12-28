@@ -32,9 +32,25 @@ def console_out_brief(lst_of_nums):
 
     diapazons = []
 
-    prev = lst_of_nums[0]
+    prev = str(lst_of_nums[0])
     rnge = str(lst_of_nums[0])
     for num in range(1, len(lst_of_nums)):
         if int(lst_of_nums[num]) - int(prev) != 1:
-            pass
-        pass
+            if str(prev) == rnge:
+                diapazons.append(rnge)
+                rnge = str(lst_of_nums[num])
+            else:
+                rnge += prev
+                diapazons.append(rnge)
+                rnge = str(lst_of_nums[num])
+        else:
+            if num == len(lst_of_nums):
+                rnge += str(lst_of_nums[num])
+                diapazons.append(rnge)
+            elif rnge[-1] != '.':
+                rnge += '..'
+        prev = str(lst_of_nums[num])
+    if ".." in rnge:
+        rnge += str(lst_of_nums[-1])
+    diapazons.append(rnge)
+    return diapazons
