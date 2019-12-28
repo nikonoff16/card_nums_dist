@@ -43,6 +43,8 @@ def start_todoist_bot(none_stop=True):
             print(chat_id, message_id)
 
         # actual logic
+        j = Json("filename.json")
+
         telegrame.send_message(telegram_api, chat_id, f"echo: {message.text}")
 
     telegram_api.polling(none_stop=none_stop)

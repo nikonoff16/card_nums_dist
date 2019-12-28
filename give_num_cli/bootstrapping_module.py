@@ -1,8 +1,9 @@
 #! python3
 # -*- coding: utf-8 -*-
-__version__ = "1.5.1"
+__version__ = "1.6.0"
 
-MODULE_TO_IMPORT = "https://github.com/egigoka/telegrame"
+MODULES_TO_IMPORT = ["https://github.com/egigoka/telegrame",
+                     "https://github.com/egigoka/commands"]
 
 import sys
 import os
@@ -20,30 +21,31 @@ def download_file(url, out=None):
     return output_file_name
 
 
-try:  # getting telegrame
-    import telegrame
-except ImportError:
-    # getting git
-    if os.system("git --version"):  # if get error while checking git version
-        if sys.platform == "win32":  # getting git
-            print("Downloading git, please, wait!")
-            git_file_name = download_file("http://github.com/git-for-windows/git/releases/download/v2.17.1.windows.2/Git-2.17.1.2-32-bit.exe")
-            print("Installing git, please, wait!")
-            os.system(" ".join([git_file_name, '/VERYSILENT', '/NORESTART', '/NOCANCEL', '/SP-', '/CLOSEAPPLICATIONS',
-                                '/RESTARTAPPLICATIONS', r'/COMPONENTS="icons,ext\reg\shellhere,assoc,assoc_sh"']))
-            os.environ["PATH"] = os.environ["PATH"] + r";C:\Program Files (x86)\Git\cmd;C:\Program Files\Git\cmd"
-            os.system("del " + git_file_name)
-        elif sys.platform in ["linux", "linux2"]:
-            os.system("sudo apt-get install git")  # todo test
-        elif sys.platform == "darwin":
-            os.system("brew install git")  # todo test
-        else:
-            raise NotImplementedError("OS " + sys.platform + " is not supported")
-    # end getting git
-    comms = f"python3 -m pip install git+{MODULE_TO_IMPORT}"
-    os.system(comms)
+for module in MODULES_TO_IMPORT:
     try:
-        import telegrame
+        eval(f"import {module}")
     except ImportError:
-        print("try to install module manually:")
-        print(comms)
+        # getting git
+        if os.system("git --version"):  # if get error while checking git version
+            if sys.platform == "win32":  # getting git
+                print("Downloading git, please, wait!")
+                git_file_name = download_file("http://github.com/git-for-windows/git/releases/download/v2.17.1.windows.2/Git-2.17.1.2-32-bit.exe")
+                print("Installing git, please, wait!")
+                os.system(" ".join([git_file_name, '/VERYSILENT', '/NORESTART', '/NOCANCEL', '/SP-', '/CLOSEAPPLICATIONS',
+                                    '/RESTARTAPPLICATIONS', r'/COMPONENTS="icons,ext\reg\shellhere,assoc,assoc_sh"']))
+                os.environ["PATH"] = os.environ["PATH"] + r";C:\Program Files (x86)\Git\cmd;C:\Program Files\Git\cmd"
+                os.system("del " + git_file_name)
+            elif sys.platform in ["linux", "linux2"]:
+                os.system("sudo apt-get install git")  # todo test
+            elif sys.platform == "darwin":
+                os.system("brew install git")  # todo test
+            else:
+                raise NotImplementedError("OS " + sys.platform + " is not supported")
+        # end getting git
+        comms = f"python3 -m pip install git+{MODULES_TO_IMPORT}"
+        os.system(comms)
+        try:
+            eval(f"import {module}")
+        except ImportError:
+            print("try to install module manually:")
+            print(comms)
