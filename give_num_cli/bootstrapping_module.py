@@ -1,6 +1,6 @@
 #! python3
 # -*- coding: utf-8 -*-
-__version__ = "1.6.0"
+__version__ = "1.6.2"
 
 MODULES_TO_IMPORT = ["https://github.com/egigoka/telegrame",
                      "https://github.com/egigoka/commands"]
@@ -21,9 +21,10 @@ def download_file(url, out=None):
     return output_file_name
 
 
-for module in MODULES_TO_IMPORT:
+for module_url in MODULES_TO_IMPORT:
+    module = os.path.split(module_url)[1]
     try:
-        eval(f"import {module}")
+        exec(f"import {module}")
     except ImportError:
         # getting git
         if os.system("git --version"):  # if get error while checking git version
@@ -45,7 +46,7 @@ for module in MODULES_TO_IMPORT:
         comms = f"python3 -m pip install git+{MODULES_TO_IMPORT}"
         os.system(comms)
         try:
-            eval(f"import {module}")
+            exec(f"import {module}")
         except ImportError:
             print("try to install module manually:")
             print(comms)
