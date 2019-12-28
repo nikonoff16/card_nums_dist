@@ -86,6 +86,7 @@ def main():
             with open("cards_numbers.json", "w") as change_file:
                 json.dump(card_num_list, change_file)
                 print("\nПолный список созданных номеров для карт:\n")
+                print(f"С хуйбалы {card_num_list[0]} по {card_num_list[-1]}")
                 output(card_num_list, 10)
             break
         
@@ -141,6 +142,7 @@ def main():
             # Аргумент --v определяет количество столбцов, в которое будет показан список
             if args.verbose:
                 print("\nПолный список оставшихся номеров для карт:\n")
+                print(f"С хуйбалы {card_num_list[0]} по {card_num_list[-1]}")
                 output(card_num_list, 10)
 
             # Сохраняем список неиспользованных номеров

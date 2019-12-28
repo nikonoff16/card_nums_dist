@@ -32,4 +32,9 @@ def console_out_brief(lst_of_nums):
 
     diapazons = []
 
-    
+    prev = lst_of_nums[0]
+    rnge = str(lst_of_nums[0])
+    for num in range(1, len(lst_of_nums)):
+        if int(lst_of_nums[num]) - int(prev) != 1:
+            pass
+        pass
