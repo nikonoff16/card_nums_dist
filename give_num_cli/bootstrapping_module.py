@@ -1,11 +1,13 @@
 #! python3
 # -*- coding: utf-8 -*-
-# # # bootstrap # # # 1.5.0
+__version__ = "1.5.1"
 
 MODULE_TO_IMPORT = "https://github.com/egigoka/telegrame"
 
 import sys
 import os
+
+
 def download_file(url, out=None):
     try:  # getting wget
         import wget
@@ -17,9 +19,10 @@ def download_file(url, out=None):
     output_file_name = wget.download(url, out=out)
     return output_file_name
 
+
 try:  # getting telegrame
     import telegrame
-except (ModuleNotFoundError, ImportError):
+except ImportError:
     # getting git
     if os.system("git --version"):  # if get error while checking git version
         if sys.platform == "win32":  # getting git
@@ -38,11 +41,9 @@ except (ModuleNotFoundError, ImportError):
             raise NotImplementedError("OS " + sys.platform + " is not supported")
     # end getting git
     comms = f"python3 -m pip install git+{MODULE_TO_IMPORT}"
-    print('......')
-    print(comms)
-    print('......')
-
-    os.system(f"pip install git+{MODULE_TO_IMPORT}")
-
-    import telegrame
-# # # end bootstrap # # #
+    os.system(comms)
+    try:
+        import telegrame
+    except ImportError:
+        print("try to install module manually:")
+        print(comms)
