@@ -21,18 +21,27 @@ def ziprange(list_):
             first = current
 
         if current+1 != next:
-            range_str = (f"{first}...{current}")
+            ranges_list.append(f"{first}...{current}")
             if first == current:
-                range_str = (f"{first}")
-            ranges_list.append(range_str)
+                ranges_list[-1] = str(current)
             first = None
 
         cnt += 1
 
     ranges_list.append(f"{first}...{current}")
+    if first is None:
+        ranges_list[-1] = str(current)
 
     return ranges_list
 
 if __name__ == '__main__':
+    print(ziprange([-10, "1","2","3", "100", "202", "203", "204", "300"]))
+    print(['-10', '1...3', "100", '202...204', "300"])
+    print()
+
     print(ziprange([-10, "1","2","3", "100", "202", "203", "204"]))
     print(['-10', '1...3', "100", '202...204'])
+    print()
+
+    print(ziprange(["1", "2", "3", "100", "202", "203", "204"]))
+    print(['1...3', "100", '202...204'])
