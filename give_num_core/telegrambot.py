@@ -4,7 +4,7 @@ import telebot
 import telegrame
 import archived_nums
 
-__version__ = "1.1.5"
+__version__ = "1.1.6"
 
 last_int_path = Path.combine(archived_nums.script_dir, "last.txt")
 
@@ -21,7 +21,7 @@ def reset_password():
 
 
 try:
-    password = GIV["api_password"]
+    password = GIV["api_password_vic"]
     if "reset" in sys.argv:
         password = reset_password()
 except (NameError, KeyError):
