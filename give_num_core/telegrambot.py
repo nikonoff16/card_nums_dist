@@ -4,7 +4,7 @@ import telebot
 import telegrame
 import archived_nums
 
-__version__ = "1.0.0"
+__version__ = "1.1.4"
 
 last_int_path = Path.combine(archived_nums.script_dir, "last.txt")
 
@@ -37,7 +37,20 @@ def start_todoist_bot(none_stop=True):
 
     @telegram_api.message_handler(commands=["start"])
     def start_message(message):
-        telegrame.send_message(telegram_api, message.chat.id, f"Hawwo")
+
+        markup = telebot.types.ReplyKeyboardMarkup()
+        more_button = telebot.types.KeyboardButton("Номер карточки!")
+
+        i2_button = telebot.types.KeyboardButton("2")
+        i5_button = telebot.types.KeyboardButton("5")
+        i10_button = telebot.types.KeyboardButton("10")
+
+        i100_button = telebot.types.KeyboardButton("100")
+
+        markup.row(more_button)
+        markup.row(i2_button, i5_button, i10_button, i100_button)
+
+        telegrame.send_message(telegram_api, message.chat.id, f"Hawwo", reply_markup=markup)
 
     @telegram_api.message_handler(content_types=["text"])
     def message_hanlder(message):
@@ -56,6 +69,7 @@ def start_todoist_bot(none_stop=True):
         except ValueError:
             count = 1
 
+        integers = []
         for i in range(count):
             integer = int(File.read(last_int_path))
 
@@ -63,8 +77,21 @@ def start_todoist_bot(none_stop=True):
                 integer += 1
 
             File.write(last_int_path, integer, mode="w")
+            integers.append(str(integer))
 
-            telegrame.send_message(telegram_api, chat_id, f"'{integer}'")
+        markup = telebot.types.ReplyKeyboardMarkup()
+        more_button = telebot.types.KeyboardButton("Ещё одну")
+
+        i2_button = telebot.types.KeyboardButton("2")
+        i5_button = telebot.types.KeyboardButton("5")
+        i10_button = telebot.types.KeyboardButton("10")
+
+        i100_button = telebot.types.KeyboardButton("100")
+
+        markup.row(more_button)
+        markup.row(i2_button, i5_button, i10_button, i100_button)
+
+        telegrame.send_message(telegram_api, chat_id, f"{newline.join(integers)}", reply_markup=markup)
         # end of logic
 
     # start bot
@@ -73,7 +100,7 @@ def start_todoist_bot(none_stop=True):
 
 
 def main():
-    print("Bot started")
+    print(f"Bot started v{__version__}")
     telegrame.very_safe_start_bot(start_todoist_bot)
 
 
