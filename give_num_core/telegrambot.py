@@ -4,7 +4,7 @@ import telebot
 import telegrame
 import archived_nums
 
-__version__ = "0.0.4"
+__version__ = "1.0.0"
 
 last_int_path = Path.combine(archived_nums.script_dir, "last.txt")
 
@@ -34,6 +34,10 @@ telegram_api = telebot.TeleBot(telegram_token, threaded=False)
 
 def start_todoist_bot(none_stop=True):
     telegram_api = telebot.TeleBot(telegram_token, threaded=False)
+
+    @telegram_api.message_handler(commands=["start"])
+    def start_message(message):
+        telegrame.send_message(telegram_api, message.chat.id, f"Hawwo")
 
     @telegram_api.message_handler(content_types=["text"])
     def message_hanlder(message):
