@@ -60,7 +60,7 @@ def start_todoist_bot(none_stop=True):
 
             File.write(last_int_path, integer, mode="w")
 
-            telegrame.send_message(telegram_api, chat_id, f"'{integer}'")
+            telegrame.send_message(telegram_api, chat_id, f"'Номер для карты - {integer}'")
         # end of logic
 
     # start bot
