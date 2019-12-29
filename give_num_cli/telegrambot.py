@@ -50,6 +50,7 @@ def start_todoist_bot(none_stop=True):
     telegram_api.polling(none_stop=none_stop)
     # https://github.com/eternnoir/pyTelegramBotAPI/issues/273
 
+
 def main():
     telegrame.very_safe_start_bot(start_todoist_bot)
 

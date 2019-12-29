@@ -44,7 +44,3 @@ def create_num_lst(start, end, args, immut=''):
                     result.append(str(immut + cnt_zs(end, number) + str(number)))
                     break
     return result
-
-
-
-
