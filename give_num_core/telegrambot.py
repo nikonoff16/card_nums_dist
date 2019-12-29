@@ -4,7 +4,7 @@ import telebot
 import telegrame
 import archived_nums
 
-__version__ = "1.1.4"
+__version__ = "1.1.5"
 
 last_int_path = Path.combine(archived_nums.script_dir, "last.txt")
 
@@ -16,7 +16,7 @@ encrypted_telegram_token = [-24, -60, 1, -12, -55, -41, -58, 17, -16, -53, 6,
 
 def reset_password():
     password = Str.input_pass()
-    GIV["api_password"] = password
+    GIV["api_password_vic"] = password
     return password
 
 
