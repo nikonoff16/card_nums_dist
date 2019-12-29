@@ -1,11 +1,17 @@
 import json
-import sys
 import argparse
 import time
+from commands import Path
 
 from create_num_table import create_num_lst
 from console_out import console_out as output
 from distribute_num import distribute_num
+
+script_dir = Path.get_parent(Path.safe__file__(__file__))
+cards_numbers_path = Path.combine(script_dir, "cards_numbers.json")
+backup_cards_numbers_path = Path.combine(script_dir, "reserve_copy.json")
+archive_nums_path = Path.combine(script_dir, "archive_nums.txt")
+
 
 def create_new_json():
     """
@@ -17,14 +23,16 @@ def create_new_json():
     """
     start = int(input("\nВведите начальное значение диапазона номеров: "))
     end = int(input("\nВведите конечное значение диапазона номеров: "))
-    immut = input("\nДополнительно: введите неизменяемый прекфикс числа, если он пристутствует (в случае отсутствия - нажмите ввод): ")
-    free_args = input("\nДополнительно+: введите через пробел дополнительные числа, по которым нужно провести выборку: ")
+    immutable = input("\nДополнительно: введите неизменяемый прекфикс числа, если он пристутствует "
+                      "(в случае отсутствия - нажмите ввод): ")
+    free_args = input("\nДополнительно+: введите через пробел дополнительные числа, по которым нужно провести выборку:")
     if free_args:
         free_args = free_args.split()
     else:
         free_args = []
-    card_num_list = create_num_lst(start, end, free_args, immut=immut)
+    card_num_list = create_num_lst(start, end, free_args, immut=immutable)
     return card_num_list
+
 
 def test_card_num(card_list):
     """
@@ -32,12 +40,14 @@ def test_card_num(card_list):
     """
     try:
         with open(card_list, "r") as read_file:
-            test = json.load(read_file)
+            test_json = json.load(read_file)
+            del test_json
         return 0
     except FileNotFoundError:
         return 1
     except ValueError:
         return 2
+
 
 def transit_args():
     """
@@ -58,6 +68,7 @@ def transit_args():
     # return {"n": args.n, "rnd": rnd, "v": args.v}
     return args
 
+
 def main():
     """ 
     Тело главной функции. Аргументов не принимает. 
@@ -73,20 +84,19 @@ def main():
     # TODO: прикрутить восстановление, если файл пуст. 
     timer = 5
     while True:
-        main_status = test_card_num("cards_numbers.json")
-        reserve_status = test_card_num("reserve_copy.json")
+        main_status = test_card_num(cards_numbers_path)
+        reserve_status = test_card_num(backup_cards_numbers_path)
         if main_status == 1 and reserve_status == 0:    # Если нет файла с номерами, но есть его копия
-            with open("reserve_copy.json", "r") as read_file:
+            with open(backup_cards_numbers_path, "r") as read_file:
                 card_num_list = json.load(read_file)
-            with open("cards_numbers.json", "w") as change_file:
+            with open(cards_numbers_path, "w") as change_file:
                 json.dump(card_num_list, change_file)
             break
         elif main_status == 1:                          # Если файла с номерами нет ни в каком виде
             card_num_list = create_new_json()
-            with open("cards_numbers.json", "w") as change_file:
+            with open(cards_numbers_path, "w") as change_file:
                 json.dump(card_num_list, change_file)
                 print("\nПолный список созданных номеров для карт:\n")
-                print(f"С хуйбалы {card_num_list[0]} по {card_num_list[-1]}")
                 output(card_num_list, 10)
             break
         
@@ -107,7 +117,7 @@ def main():
     # Считываем данные из файла с номерами. 
     # TODO: Срочно поменять эту систему. Файл может стать заблокированным в момент между 
     # проверкой и записью, и тогда уникальность номеров может быть скомпроментирована. 
-    with open("cards_numbers.json", "r") as change_file:
+    with open(cards_numbers_path, "r") as change_file:
         card_num_list = json.load(change_file)
         if args.append:
             print("Добавляем новые номера в конец старого списка. Следуйте инструкциям в терминале:")
@@ -116,7 +126,7 @@ def main():
     
     if card_num_list:  # Недопускаем работы с пустым списком. 
         # Блокируем файл, выдаем пользователю номера, производим запись в основной и резервный файлы. 
-        with open("cards_numbers.json", "w") as change_file:
+        with open(cards_numbers_path, "w") as change_file:
 
             # Передаю аргументы в функцию для выбора индексов
             numbers = distribute_num(len(card_num_list), quant=args.nums, rand=args.random)  
@@ -126,7 +136,7 @@ def main():
             for num in numbers:
                 real_num = card_num_list[num]
                 # здесь записываем выданные номера в виде строки. 
-                with open("archive_nums.txt", "a") as old_nums:
+                with open(archive_nums_path, "a") as old_nums:
                     old_nums.write(real_num + " ")
                 print("Номер для карты -", real_num)
             print("*" * (18 + len(card_num_list[0])))
@@ -149,10 +159,11 @@ def main():
             json.dump(card_num_list, change_file)
 
             # Создаем резервную копию данных
-            with open("reserve_copy.json", "w") as write_file:
+            with open(backup_cards_numbers_path, "w") as write_file:
                 json.dump(card_num_list, write_file)
     else:
-        print("Список свободных номеров пуст. запустите утилиту с аргументом -a (--append) для пополнения списка номеров.")   
+        print("Список свободных номеров пуст. запустите утилиту с аргументом -a (--append) "
+              "для пополнения списка номеров.")
 
 
 if __name__ == '__main__':  
