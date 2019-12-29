@@ -61,6 +61,7 @@ def transit_args():
     parser.add_argument("-r", "--random", action="store_true", help="Программа выбирает номера в случайном порядке")
     parser.add_argument("-a", "--append", action="store_true", help="Открывает диалог дополнения списка")
     parser.add_argument("-v", "--verbose", action="store_true", help="Вывод на экран всего оставшегося списка номеров")
+    parser.add_argument("-c", "--clear", action="store_true", help="Сброс текущего списка, запуск процедуры создания нового")
     args = parser.parse_args()
 
     # # Костыль, обрабатываю один из необязательных аргументов
@@ -126,6 +127,9 @@ def main():
             print("Добавляем новые номера в конец старого списка. Следуйте инструкциям в терминале:")
             new_nums = create_new_json()
             card_num_list += new_nums
+        elif args.clear:
+            print("Удаляем старый список, создаем вместо него новый. Следуйте инструкциям в терминале:")
+            card_num_list = create_new_json()
     
     if card_num_list:  # Недопускаем работы с пустым списком. 
         # Блокируем файл, выдаем пользователю номера, производим запись в основной и резервный файлы. 
