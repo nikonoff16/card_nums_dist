@@ -6,9 +6,12 @@ from commands import Path
 from create_num_table import create_num_lst
 from console_out import console_out as output
 from distribute_num import distribute_num
+from rangezip import ziprange
 
 script_dir = Path.get_parent(Path.safe__file__(__file__))
+# print(script_dir)
 cards_numbers_path = Path.combine(script_dir, "cards_numbers.json")
+# print(cards_numbers_path)
 backup_cards_numbers_path = Path.combine(script_dir, "reserve_copy.json")
 archive_nums_path = Path.combine(script_dir, "archive_nums.txt")
 
@@ -58,6 +61,7 @@ def transit_args():
     parser.add_argument("-r", "--random", action="store_true", help="Программа выбирает номера в случайном порядке")
     parser.add_argument("-a", "--append", action="store_true", help="Открывает диалог дополнения списка")
     parser.add_argument("-v", "--verbose", action="store_true", help="Вывод на экран всего оставшегося списка номеров")
+    parser.add_argument("-c", "--clear", action="store_true", help="Сброс текущего списка, запуск процедуры создания нового")
     args = parser.parse_args()
 
     # # Костыль, обрабатываю один из необязательных аргументов
@@ -123,6 +127,9 @@ def main():
             print("Добавляем новые номера в конец старого списка. Следуйте инструкциям в терминале:")
             new_nums = create_new_json()
             card_num_list += new_nums
+        elif args.clear:
+            print("Удаляем старый список, создаем вместо него новый. Следуйте инструкциям в терминале:")
+            card_num_list = create_new_json()
     
     if card_num_list:  # Недопускаем работы с пустым списком. 
         # Блокируем файл, выдаем пользователю номера, производим запись в основной и резервный файлы. 
@@ -145,6 +152,11 @@ def main():
             numbers = sorted(numbers, reverse=True)  # Таким образом ошибки обращения по индексу избегаем. 
             for num in numbers:
                 card_num_list.pop(num)
+            # Отображаем все доступные после выборки номера в виде диапазонов в обязательном порядке.
+            print("Доступны следующие диапазоны номеров:")
+            diap = ziprange(card_num_list)
+            for rng in diap:
+                print(rng, end='; ')
 
             print("\nДлина обработанного списка - ", len(card_num_list))
 
@@ -152,7 +164,7 @@ def main():
             # Аргумент --v определяет количество столбцов, в которое будет показан список
             if args.verbose:
                 print("\nПолный список оставшихся номеров для карт:\n")
-                print(f"С хуйбалы {card_num_list[0]} по {card_num_list[-1]}")
+                # print(f"С хуйбалы {card_num_list[0]} по {card_num_list[-1]}")
                 output(card_num_list, 10)
 
             # Сохраняем список неиспользованных номеров
