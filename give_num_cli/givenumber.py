@@ -6,9 +6,12 @@ from commands import Path
 from create_num_table import create_num_lst
 from console_out import console_out as output
 from distribute_num import distribute_num
+from rangezip import ziprange
 
 script_dir = Path.get_parent(Path.safe__file__(__file__))
+# print(script_dir)
 cards_numbers_path = Path.combine(script_dir, "cards_numbers.json")
+# print(cards_numbers_path)
 backup_cards_numbers_path = Path.combine(script_dir, "reserve_copy.json")
 archive_nums_path = Path.combine(script_dir, "archive_nums.txt")
 
@@ -145,6 +148,11 @@ def main():
             numbers = sorted(numbers, reverse=True)  # Таким образом ошибки обращения по индексу избегаем. 
             for num in numbers:
                 card_num_list.pop(num)
+            # Отображаем все доступные после выборки номера в виде диапазонов в обязательном порядке.
+            print("Доступны следующие диапазоны номеров:")
+            diap = ziprange(card_num_list)
+            for rng in diap:
+                print(rng, end='; ')
 
             print("\nДлина обработанного списка - ", len(card_num_list))
 
@@ -152,7 +160,7 @@ def main():
             # Аргумент --v определяет количество столбцов, в которое будет показан список
             if args.verbose:
                 print("\nПолный список оставшихся номеров для карт:\n")
-                print(f"С хуйбалы {card_num_list[0]} по {card_num_list[-1]}")
+                # print(f"С хуйбалы {card_num_list[0]} по {card_num_list[-1]}")
                 output(card_num_list, 10)
 
             # Сохраняем список неиспользованных номеров
