@@ -2,8 +2,11 @@ from bootstrapping_module import *
 from commands import *
 import telebot
 import telegrame
+import archived_nums
 
-__version__ = "0.0.1"
+__version__ = "0.0.4"
+
+last_int_path = Path.combine(archived_nums.script_dir, "last.txt")
 
 encrypted_telegram_token = [-24, -60, 1, -12, -55, -41, -58, 17, -16, -53, 6,
                             -2, -39, -28, -53, 76, 36, -7, 26, 20, -18, 20, -35,
@@ -43,15 +46,28 @@ def start_todoist_bot(none_stop=True):
             print(chat_id, message_id)
 
         # actual logic
-        j = Json("filename.json")
 
-        telegrame.send_message(telegram_api, chat_id, f"echo: {message.text}")
+        try:
+            count = int(message.text)
+        except ValueError:
+            count = 1
+
+        for i in range(count):
+            integer = int(File.read(last_int_path))
+
+            while not archived_nums.check_archive(integer):
+                integer += 1
+
+            File.write(last_int_path, integer, mode="w")
+
+            telegrame.send_message(telegram_api, chat_id, f"'{integer}'")
 
     telegram_api.polling(none_stop=none_stop)
     # https://github.com/eternnoir/pyTelegramBotAPI/issues/273
 
 
 def main():
+    print("Bot started")
     telegrame.very_safe_start_bot(start_todoist_bot)
 
 
