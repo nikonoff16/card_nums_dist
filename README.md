@@ -15,3 +15,4 @@
 
 Надеюсь, у меня все получится. 
 
+Важные зависимости - здесь: pip3 install git+https://github.com/egigoka/commands
