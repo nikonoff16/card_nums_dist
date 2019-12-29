@@ -61,7 +61,9 @@ def start_todoist_bot(none_stop=True):
             File.write(last_int_path, integer, mode="w")
 
             telegrame.send_message(telegram_api, chat_id, f"'{integer}'")
+        # end of logic
 
+    # start bot
     telegram_api.polling(none_stop=none_stop)
     # https://github.com/eternnoir/pyTelegramBotAPI/issues/273
 
