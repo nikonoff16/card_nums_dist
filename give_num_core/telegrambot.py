@@ -4,7 +4,7 @@ import telebot
 import telegrame
 import archived_nums
 
-__version__ = "1.1.6"
+__version__ = "1.2.0"
 
 last_int_path = Path.combine(archived_nums.script_dir, "last.txt")
 
@@ -50,7 +50,10 @@ def start_todoist_bot(none_stop=True):
         markup.row(more_button)
         markup.row(i2_button, i5_button, i10_button, i100_button)
 
-        telegrame.send_message(telegram_api, message.chat.id, f"Hawwo", reply_markup=markup)
+        telegrame.send_message(telegram_api, message.chat.id,
+                               f"Приветствую в боте для выдачи номеров карт! Укажите цифрой нужное вам количество номеров, "
+                               f"или воспользуйтесь специальной клавиатурой для этого. Приятного использования!",
+                               reply_markup=markup)
 
     @telegram_api.message_handler(content_types=["text"])
     def message_hanlder(message):
